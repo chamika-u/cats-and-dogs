@@ -10,20 +10,20 @@ A lightweight Deep Learning project that uses a Convolutional Neural Network (CN
 
 ## 2. Installation
 
-2.1.  **Clone the repository**
+1.  **Clone the repository**
     ```bash
     git clone https://github.com/chamika-u/cats-and-dogs.git
     cd cats-and-dogs
     ```
 
-2.2.  **Create a Virtual Environment** (Recommended)
+2.  **Create a Virtual Environment** (Recommended)
     ```bash
     # Windows
     python -m venv venv
     .\venv\Scripts\activate
     ```
 
-2.3.  **Install Dependencies**
+3.  **Install Dependencies**
     ```bash
     pip install tensorflow numpy
     ```
