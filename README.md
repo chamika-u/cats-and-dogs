@@ -12,7 +12,7 @@ A lightweight Deep Learning project that uses a Convolutional Neural Network (CN
 
 1.  **Clone the repository**
     ```bash
-    git clone [https://github.com/chamika-u/cats-and-dogs.git](https://github.com/chamika-u/cats-and-dogs.git)
+    git clone https://github.com/chamika-u/cats-and-dogs.git
     cd cats-and-dogs
     ```
 
