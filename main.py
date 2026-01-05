@@ -42,7 +42,8 @@ def predict_batch(image_paths, model_path='cat_dog_classifier.h5'):
         model_path: Path to the trained model
     
     Returns:
-        list: List of predictions ('DOG' or 'CAT')
+        list: List of predictions ('DOG', 'CAT', or None for failed images)
+              None indicates the image failed to load
     """
     # Load model from cache or disk
     if model_path not in _model_cache:
@@ -58,7 +59,8 @@ def predict_batch(image_paths, model_path='cat_dog_classifier.h5'):
             img_array = img_to_array(img)
             images.append(img_array)
             valid_indices.append(i)
-        except Exception as e:
+        except (OSError, ValueError) as e:
+            # Handle specific expected errors during image loading
             print(f"Warning: Failed to load image {path}: {e}")
             continue
     
@@ -76,6 +78,7 @@ def predict_batch(image_paths, model_path='cat_dog_classifier.h5'):
     predictions = ["DOG" if result[0] > 0.5 else "CAT" for result in results]
     
     # Return predictions aligned with original input
+    # None indicates failed image loading
     full_predictions = [None] * len(image_paths)
     for idx, pred in zip(valid_indices, predictions):
         full_predictions[idx] = pred
@@ -101,4 +104,7 @@ if __name__ == "__main__":
     # image_list = ['image1.jpg', 'image2.jpg', 'image3.jpg']
     # predictions = predict_batch(image_list)
     # for img, pred in zip(image_list, predictions):
-    #     print(f"{img}: {pred}")
+    #     if pred is None:
+    #         print(f"{img}: Failed to load")
+    #     else:
+    #         print(f"{img}: {pred}")
