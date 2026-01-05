@@ -41,12 +41,21 @@ def predict_batch(image_paths, model_path='cat_dog_classifier.h5'):
     # Load model once for all predictions
     model = load_model(model_path)
     
-    # Load and preprocess all images
+    # Load and preprocess all images with error handling
     images = []
-    for path in image_paths:
-        img = load_img(path, target_size=(150, 150))
-        img_array = img_to_array(img)
-        images.append(img_array)
+    valid_indices = []
+    for i, path in enumerate(image_paths):
+        try:
+            img = load_img(path, target_size=(150, 150))
+            img_array = img_to_array(img)
+            images.append(img_array)
+            valid_indices.append(i)
+        except Exception as e:
+            print(f"Warning: Failed to load image {path}: {e}")
+            continue
+    
+    if not images:
+        raise ValueError("No valid images to process")
     
     # Stack images into a batch
     batch = np.array(images)
@@ -55,7 +64,14 @@ def predict_batch(image_paths, model_path='cat_dog_classifier.h5'):
     results = model.predict(batch, verbose=0)
     
     # Convert results to labels
-    return ["DOG" if result[0] > 0.5 else "CAT" for result in results]
+    predictions = ["DOG" if result[0] > 0.5 else "CAT" for result in results]
+    
+    # Return predictions aligned with original input
+    full_predictions = [None] * len(image_paths)
+    for idx, pred in zip(valid_indices, predictions):
+        full_predictions[idx] = pred
+    
+    return full_predictions
 
 # Example usage
 if __name__ == "__main__":

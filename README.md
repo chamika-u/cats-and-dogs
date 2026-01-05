@@ -50,7 +50,7 @@ project_folder/
 Run the training script to teach the AI. This script reads the images, trains the CNN, and saves the "brain" as a file named `cat_dog_classifier.h5`.
 
 ```bash
-python train.py
+python script.py
 ```
 
 ## 5. Performance Optimizations
