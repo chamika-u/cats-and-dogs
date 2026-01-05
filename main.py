@@ -2,6 +2,9 @@ import numpy as np
 from tensorflow.keras.utils import load_img, img_to_array
 from tensorflow.keras.models import load_model
 
+# Module-level model cache for efficiency
+_model_cache = {}
+
 def predict_image(image_path, model_path='cat_dog_classifier.h5'):
     """
     Predict whether an image is a cat or dog.
@@ -13,13 +16,16 @@ def predict_image(image_path, model_path='cat_dog_classifier.h5'):
     Returns:
         str: 'DOG' or 'CAT'
     """
-    # Load model only when needed (lazy loading)
-    model = load_model(model_path)
+    # Load model from cache or disk (avoids reloading on every call)
+    if model_path not in _model_cache:
+        _model_cache[model_path] = load_model(model_path)
+    model = _model_cache[model_path]
     
     # Load and preprocess image
     test_image = load_img(image_path, target_size=(150, 150))
     test_image_array = img_to_array(test_image)
     test_image_array = np.expand_dims(test_image_array, axis=0)  # Add batch dimension
+    # Note: Normalization (dividing by 255) is handled by the Rescaling layer in the model
     
     # Predict
     result = model.predict(test_image_array, verbose=0)  # verbose=0 for cleaner output
@@ -38,8 +44,10 @@ def predict_batch(image_paths, model_path='cat_dog_classifier.h5'):
     Returns:
         list: List of predictions ('DOG' or 'CAT')
     """
-    # Load model once for all predictions
-    model = load_model(model_path)
+    # Load model from cache or disk
+    if model_path not in _model_cache:
+        _model_cache[model_path] = load_model(model_path)
+    model = _model_cache[model_path]
     
     # Load and preprocess all images with error handling
     images = []
@@ -59,6 +67,7 @@ def predict_batch(image_paths, model_path='cat_dog_classifier.h5'):
     
     # Stack images into a batch
     batch = np.array(images)
+    # Note: Normalization (dividing by 255) is handled by the Rescaling layer in the model
     
     # Single prediction call for all images (much faster)
     results = model.predict(batch, verbose=0)
